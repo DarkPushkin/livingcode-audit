@@ -1,0 +1,126 @@
+{
+  "comment": "Ротация ролей по спринтам (владелец, 22.11.2026). Топ-4 NVIDIA по рейтингу. mode=experiment: роли меняются от спринта к спринту, замеры в state/role_runs.jsonl. Когда схема отобрана — заполнить 'scheme' и он станет приоритетом над ротацией.",
+  "provider": "nvidia",
+  "cycle_seconds": 14400,
+  "models": [
+    "poolside/laguna-xs-2.1",
+    "mistralai/mistral-large-4-1t-a52b",
+    "stepfun-ai/step-5-preview",
+    "minimaxai/minimax-m3.1-flash"
+  ],
+  "model_ratings": {
+    "poolside/laguna-xs-2.1": 74.7,
+    "mistralai/mistral-large-4-1t-a52b": 62.8,
+    "stepfun-ai/step-5-preview": 60.8,
+    "minimaxai/minimax-m3.1-flash": 20.5
+  },
+  "role_offsets": {
+    "L3-Критик": 0,
+    "Proposer протокола": 1,
+    "Super-Supervisor": 2,
+    "UI-Гейт": 3,
+    "Аудитор": 0,
+    "Владыка Кода": 1,
+    "Искатель": 2,
+    "Искатель Дайджест": 3,
+    "Кодер Elemental Life": 0,
+    "Кодер Elemental Life 2": 1,
+    "Кодер Project1": 2,
+    "Кодер Project2": 3,
+    "Кодер Project3": 0,
+    "Кодер Project4": 1,
+    "Продюсер": 2,
+    "Профессор": 3,
+    "Профессор Учебник": 0,
+    "Судья Laya": 1,
+    "Топик 252": 2
+  },
+  "free_models": [
+    "meituan/longcat-2.5:free",
+    "tencent/hy4-flash:free",
+    "upstage/solar-mini4:free",
+    "qwen/qwen4-max:free"
+  ],
+  "free_roles": [
+    "Искатель Дайджест",
+    "Топик 252"
+  ],
+  "free_offsets": {
+    "Искатель Дайджест": 0,
+    "Топик 252": 2
+  },
+  "free_note": "Замер 23.11 (state/free_capability.json): 4 из 5 Nous :free написали корректный код за 17-25 с и прошли pytest. step-3.7-flash:free исключён — не дал кода за 420 с. qwen4-max даёт код, но зависает в агентном цикле → потолок бесплатного яруса на длинных задачах низкий.",
+  "scheme": {
+    "L3-Критик": "poolside/laguna-xs-2.1",
+    "Владыка Кода": "poolside/laguna-xs-2.1",
+    "Продюсер": "poolside/laguna-xs-2.1",
+    "Super-Supervisor": "poolside/laguna-xs-2.1",
+    "UI-Гейт": "poolside/laguna-xs-2.1",
+    "Proposer протокола": "poolside/laguna-xs-2.1",
+    "Профессор": "poolside/laguna-xs-2.1",
+    "Профессор Учебник": "poolside/laguna-xs-2.1",
+    "Кодер Project1": "poolside/laguna-xs-2.1",
+    "Кодер Project2": "poolside/laguna-xs-2.1",
+    "Кодер Project3": "poolside/laguna-xs-2.1",
+    "Кодер Project4": "poolside/laguna-xs-2.1",
+    "Кодер Elemental Life": "poolside/laguna-xs-2.1",
+    "Кодер Elemental Life 2": "poolside/laguna-xs-2.1",
+    "Судья Laya": "poolside/laguna-xs-2.1",
+    "Аудитор": "mistralai/mistral-large-4-1t-a52b",
+    "Искатель": "mistralai/mistral-large-4-1t-a52b",
+    "Искатель Дайджест": {
+      "model": "upstage/solar-mini4:free",
+      "provider": "nous"
+    },
+    "Топик 252": {
+      "model": "stepfun/step-3.7-flash:free",
+      "provider": "nous"
+    }
+  },
+  "experiment": false,
+  "scheme_note": "Зафиксировано 23.11.2026 по фактическим замерам state/role_runs.jsonl. Правило: модель ставится в роль, только если её замеренное время влезает в окно слота с запасом (критик/продюсер/владыка 600 с, аудитор 900 с, кодеры 1200 с, искатель 2700 с). minimax (1163 с) не влезает в окно 600/900/1200 с — 2 таймаута; step-5 (2665 с) не влезает никуда, кроме 2700 с и то впритык. Аудитору оставлен mistral (самая глубокая проверка: 369 артефактов).",
+  "slot_budgets": {
+    "Аудитор": 900,
+    "L3-Критик": 600,
+    "Владыка Кода": 600,
+    "Продюсер": 600,
+    "Super-Supervisor": 600,
+    "Кодер Project1": 1200,
+    "Кодер Project2": 1200,
+    "Кодер Project3": 1200,
+    "Кодер Project4": 1200,
+    "Искатель": 2700,
+    "Искатель Дайджест": 2700,
+    "Профессор": 900,
+    "Proposer протокола": 1200,
+    "UI-Гейт": 600,
+    "Топик 252": 900
+  },
+  "shadow_rate": 0.15,
+  "shadow_models": {
+    "Аудитор": "poolside/laguna-xs-2.1",
+    "Кодер Project1": "mistralai/mistral-large-4-1t-a52b",
+    "Кодер Project2": "mistralai/mistral-large-4-1t-a52b",
+    "Кодер Project3": "mistralai/mistral-large-4-1t-a52b",
+    "Кодер Project4": "mistralai/mistral-large-4-1t-a52b",
+    "Искатель Дайджест": "stepfun/step-3.7-flash:free"
+  },
+  "shadow_note": "15% прогонов роли уходит на измеренную альтернативу: без состязания схема не может улучшиться. Альтернативы подобраны так, чтобы влезать в окно слота.",
+  "phase": "training",
+  "free_first": true,
+  "premium_models": [
+    "mistralai/mistral-large-4-1t-a52b",
+    "stepfun-ai/step-5-preview",
+    "minimaxai/minimax-m3.1-flash",
+    "meta/muse-glimmer-30b-a3b"
+  ],
+  "premium_roles": {},
+  "switch_criteria": {
+    "1_данные": "≥3 успешных прогона на каждую пару (роль×модель) в state/role_runs.jsonl",
+    "2_схема": "схема зафиксирована в rotation.json.scheme и пережила 1 спринт без ухудшения",
+    "3_исход": "outcomes.jsonl содержит метрики исхода релизов (время до релиза, регрессы)",
+    "4_валидация": "A/B на 5-10% спринтов: бесплатная схема vs премиум — премиум выигрывает по исходу",
+    "5_решение": "решение владельца: 'впрягаем боевых коней'"
+  },
+  "free_capability": "state/free_capability.json"
+}

@@ -1,0 +1,38 @@
+{
+  "probe_date": "2026-11-23",
+  "task": "написать fib(n)+тест, проверить pytest",
+  "cost": "0 платных токенов (Nous Portal :free)",
+  "results": [
+    {
+      "model": "meituan/longcat-2.5:free",
+      "duration_s": 17.1,
+      "code_pass": true,
+      "agent_loop": "ok"
+    },
+    {
+      "model": "tencent/hy4-flash:free",
+      "duration_s": 19.9,
+      "code_pass": true,
+      "agent_loop": "ok"
+    },
+    {
+      "model": "upstage/solar-mini4:free",
+      "duration_s": 24.7,
+      "code_pass": true,
+      "agent_loop": "ok"
+    },
+    {
+      "model": "qwen/qwen4-max:free",
+      "duration_s": 420.1,
+      "code_pass": true,
+      "agent_loop": "завис после кода"
+    },
+    {
+      "model": "stepfun/step-3.7-flash:free",
+      "duration_s": 420.0,
+      "code_pass": false,
+      "agent_loop": "завис, кода нет"
+    }
+  ],
+  "вывод": "4/5 бесплатных моделей пишут корректный код за 17-25 с; сбой — не в коде, а в длинном агентном цикле. Бесплатный ярус годится для обучения и мелких задач; потолок агентных циклов у него низкий."
+}

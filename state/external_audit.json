@@ -1,0 +1,305 @@
+{
+  "report": "public-repo/docs/audits/gemini-audit-2026-11-23.md",
+  "generated": "2026-11-23T06:36:07+01:00",
+  "report_mtime": "2026-11-23T06:36:07+01:00",
+  "findings_total": 35,
+  "by_severity": {
+    "P0": 3,
+    "P1": 12,
+    "P2": 14
+  },
+  "confirmed_by_severity": {
+    "P0": 0,
+    "P1": 3,
+    "P2": 5
+  },
+  "confirmed_p0": 0,
+  "status_counts": {
+    "weak": 17,
+    "confirmed": 8,
+    "line_mismatch": 7,
+    "resolved": 3
+  },
+  "findings": [
+    {
+      "line_no": 14,
+      "severity": "P1",
+      "ref": "scripts/cycle_close.py:210",
+      "claim": "P1\tscripts/cycle_close.py:210\tСинхронное чтение секрета бота прямо в цикле релиза (open(...).read()) без обработки потенциальных ошибок OSError.\tИспользовать os.environ.get(\"CATHEDRAL_BOT_TOKEN\") или обернуть в try...except.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): except"
+    },
+    {
+      "line_no": 15,
+      "severity": "P1",
+      "ref": "scripts/cloud_audit.py:37",
+      "claim": "P1\tscripts/cloud_audit.py:37\tattach_zip ожидает жесткий таймаут и падает с RuntimeError, если диалог загрузки браузера не успел отрисоваться.\tДобавить экспоненциальную задержку (backoff) и проверку наличия элемента перед вызовом CDP.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): scripts, attach_zip, runtimeerror"
+    },
+    {
+      "line_no": 16,
+      "severity": "P2",
+      "ref": "scripts/conveyor.py:110",
+      "claim": "P2\tscripts/conveyor.py:110\tОграничение MAX_FILES_SCAN = 30000 прерывает обход файлов без предупреждения в логах, искажая метрики проекта.\tДобавить логирование предупреждения print(f\"⚠️ Превышен лимит файлов для {path}\").",
+      "status": "confirmed",
+      "detail": "совпало в строках 107-114: max_files_scan"
+    },
+    {
+      "line_no": 17,
+      "severity": "P2",
+      "ref": "scripts/artist_entry.py:45",
+      "claim": "P2\tscripts/artist_entry.py:45\tОтсутствие валидации параметров в generate_pollinations при передаче некорректного или слишком длинного промпта.\tДобавить обрезку промпта до разумного лимита (например, 1000 символов) перед запросом.",
+      "status": "confirmed",
+      "detail": "совпало в строках 42-49: generate_pollinations"
+    },
+    {
+      "line_no": 18,
+      "severity": "P2",
+      "ref": "scripts/check_roster.py:165",
+      "claim": "P2\tscripts/check_roster.py:165\tОшибки выполнения condition_snapshot.py через subprocess глушатся в except Exception: pass, скрывая рассинхронизацию стейта.\tЛогировать предупреждение в warnings.append с текстом ошибки подпроцесса.",
+      "status": "resolved",
+      "detail": "в строках 162-169 голого pass нет — ошибка больше не глотается"
+    },
+    {
+      "line_no": 65,
+      "severity": null,
+      "ref": "cycle_close.py:210",
+      "claim": "Главные проблемы первой части сосредоточены в обработке внешних системных вызовов и чтении конфиденциальных данных: потенциальные падения при отсутствии токенов в cycle_close.py:210, хрупкость CDP-автоматизации в cloud_audit.py:37 и проглатывание ошибок в condition_snapshot.py. В первую очередь необходимо исправить безопасное чтение секретов и добавить явное логирование исключений при проверке сос",
+      "status": "line_mismatch",
+      "detail": "в строках 210-210 нет слов: cloud_audit, condition_snapshot"
+    },
+    {
+      "line_no": 75,
+      "severity": "P0",
+      "ref": "scripts/l3_critic.py:65",
+      "claim": "P0\tscripts/l3_critic.py:65\tRCE через shell=True: test_cmd из внешнего словаря критериев (criteria) передается в subprocess.run с shell=True. Если LLM-кодер запишет в критерии вредоносную команду, она выполнится в окружении критика.\tЗаменить shell=True на список аргументов (shlex.split) или валидировать разрешенные префиксы команд.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): test_cmd, criteria, subprocess"
+    },
+    {
+      "line_no": 76,
+      "severity": "P1",
+      "ref": "scripts/guard_action.py:33",
+      "claim": "P1\tscripts/guard_action.py:33\tНебезопасный механизм доверия маркера: файл owner_approval.json проверяется по таймстампу, но не имеет проверки владельца/прав записи (UID) и криптографической подписи. Любой процесс в контейнере с доступом к файловой системе может создать маркер approve.\tПроверять владельца файла (os.stat().st_uid), использовать права 0600 или увязать с Unix socket / системным вызово",
+      "status": "confirmed",
+      "detail": "совпало в строках 30-37: approve"
+    },
+    {
+      "line_no": 77,
+      "severity": "P1",
+      "ref": "scripts/freeze_gate.py:270",
+      "claim": "P1\tscripts/freeze_gate.py:270\tНеатомарная запись кэша: cache_path(project).write_text(...) записывает JSON напрямую, что при аварийном завершении/таймауте приводит к поврежденному JSON и падению гейта на последующих чтениях.\tИспользовать паттерн записи во временный файл в той же директории с последующим атомарным переименованием (os.replace).",
+      "status": "confirmed",
+      "detail": "совпало в строках 267-274: project"
+    },
+    {
+      "line_no": 78,
+      "severity": "P2",
+      "ref": "scripts/laya_service.py:108",
+      "claim": "P2\tscripts/laya_service.py:108\tПатчинг модуля на лету (monkeypatch): во время запроса переопределяется bridge.build_router = lambda .... При параллельных запросах или сбоях это создает состояние гонки в глобальном пространстве имен импортированного модуля.\tПередавать фабрику роутера через аргументы или замыкание функций, избегая мутации глобального состояния модуля.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): bridge, build_router, lambda"
+    },
+    {
+      "line_no": 79,
+      "severity": "P2",
+      "ref": "scripts/intake_pick.py:40",
+      "claim": "P2\tscripts/intake_pick.py:40\tОтсутствие блокировки при чтении/записи леджера: intake_ledger.json читается и пишется без межпроцессных блокировок (fcntl.flock), что при параллельных кронах приведет к race condition и порче JSON.\tДобавить fcntl.flock при работе с файлом реестра очереди.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): intake_ledger"
+    },
+    {
+      "line_no": 80,
+      "severity": "P2",
+      "ref": "scripts/journal_lint.py:53",
+      "claim": "P2\tscripts/journal_lint.py:53\tУязвимость линтера журнала к обходу: регулярное выражение для поиска утверждений (CLAIM_RE) и тегов (TAG_RE) может быть обйдено с помощью нетипичной лексики или маскировки формулировок, позволяя инъекциям проскочить компакцию.\tРасширить словарь стоп-слов и использовать семантическую проверку через Laya/LLM для сомнительных строк.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): claim_re, tag_re"
+    },
+    {
+      "line_no": 81,
+      "severity": null,
+      "ref": "scripts/kg_migrate.py:29",
+      "claim": "P3\tscripts/kg_migrate.py:29\tУпрощенная эвристика связей: classify_rel ищет подстроки на русском/английском, что при нестандартных связях графа проставляет semantic по умолчанию, портя семантику Jev-Mem.\tУлучшить классификатор или запрашивать семантический тип у легковесной модели, если эвристика не уверена.",
+      "status": "resolved",
+      "detail": "в строках 26-33 голого pass нет — ошибка больше не глотается"
+    },
+    {
+      "line_no": 82,
+      "severity": null,
+      "ref": "scripts/laya_bridge.py:170",
+      "claim": "P3\tscripts/laya_bridge.py:170\tМолчаливое подавление ошибок в сервисе: при сбое _try_warm возвращает None и переходит на холодный путь, маскируя проблемы падения демона Laya.\tЛогировать причину недоступности теплого сервиса в stderr/журнал с большей детализацией.",
+      "status": "resolved",
+      "detail": "в строках 167-174 голого pass нет — ошибка больше не глотается"
+    },
+    {
+      "line_no": 83,
+      "severity": null,
+      "ref": "scripts/generate_state.py:65",
+      "claim": "P3\tscripts/generate_state.py:65\tЭвристика # HOT по первой строке файла: поиск # HOT или детекция по mtime за 48 часов чувствительны к случайному касанию файлов (например, touch или IDE автосохранение), ложно блокируя релиз.\tОпираться строго на git status --porcelain с фильтрацией по отслеживаемым изменениям.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): status, porcelain"
+    },
+    {
+      "line_no": 84,
+      "severity": null,
+      "ref": "scripts/kg_validate.py:18",
+      "claim": "P3\tscripts/kg_validate.py:18\tОграничение вывода ошибок: при валидации графа выводятся только первые 20 ошибок (errors[:20]), что затрудняет отладку больших миграций.\tДобавить сохранение полного списка ошибок в файл отчета при превышении лимита.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): errors"
+    },
+    {
+      "line_no": 97,
+      "severity": null,
+      "ref": "laya_service.py:108",
+      "claim": "Гонки и глобальное состояние: В laya_service.py используется threading.RLock(), однако переприсвоение функции bridge.build_router в процессе обработки запроса (laya_service.py:108) небезопасно для потоков.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): threading, bridge, build_router"
+    },
+    {
+      "line_no": 127,
+      "severity": "P0",
+      "ref": "scripts/l3_critic.py:65",
+      "claim": "scripts/l3_critic.py:65 (Severity P0) — RCE через shell=True в subprocess.run при выполнении критериальных тестов из внешнего JSON.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): subprocess"
+    },
+    {
+      "line_no": 129,
+      "severity": "P1",
+      "ref": "scripts/guard_action.py:33",
+      "claim": "scripts/guard_action.py:33 (Severity P1) — Отсутствие контроля прав и целостности файла маркера одобрения owner_approval.json.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): owner_approval"
+    },
+    {
+      "line_no": 131,
+      "severity": "P1",
+      "ref": "scripts/freeze_gate.py:270",
+      "claim": "scripts/freeze_gate.py:270 (Severity P1) — Неатомарная запись кэш-файлов вердиктов, приводящая к порче JSON при сбоях.",
+      "status": "line_mismatch",
+      "detail": "в строках 270-270 нет слов: scripts, severity"
+    },
+    {
+      "line_no": 133,
+      "severity": "P2",
+      "ref": "scripts/laya_service.py:108",
+      "claim": "scripts/laya_service.py:108 (Severity P2) — Потоконебезопасный патчинг модульных функций (bridge.build_router) во время обработки HTTP-запросов.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): bridge, build_router"
+    },
+    {
+      "line_no": 135,
+      "severity": "P2",
+      "ref": "scripts/intake_pick.py:40",
+      "claim": "scripts/intake_pick.py:40 (Severity P2) — Отсутствие межпроцессных блокировок (fcntl) при чтении и записи файла очереди intake_ledger.json.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): intake_ledger"
+    },
+    {
+      "line_no": 150,
+      "severity": "P1",
+      "ref": "scripts/qwen3_tts_gateway.py:16",
+      "claim": "P1\tscripts/qwen3_tts_gateway.py:16\tЖёстко прописанные абсолютные пути к виртуальному окружению /home/thomas/.venv-tts11 и эталонному аудио /tmp/reference.wav.\tПеренести пути в конфигурационный файл или переменные окружения с проверкой их существования при старте.",
+      "status": "confirmed",
+      "detail": "совпало в строках 13-20: thomas"
+    },
+    {
+      "line_no": 153,
+      "severity": "P1",
+      "ref": "scripts/project_intake.py:157",
+      "claim": "P1\tscripts/project_intake.py:157\tИспользование глобальной неатомарной блокировки через /tmp/lc_intake.lock с LOCK_NB. При высокой конкуренции процессы могут падать или пропускать итерации.\tЗаменить на стандартный contextlib с межпроцессорной блокировкой или использовать полноценный менеджер очередей.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): lc_intake, lock_nb"
+    },
+    {
+      "line_no": 154,
+      "severity": "P1",
+      "ref": "scripts/memory_guard.py:90",
+      "claim": "P1\tscripts/memory_guard.py:90\tФункция entry_size рекурсивно обходит /tmp без ограничения глубины, что может привести к зависанию (DoS) при сканировании поврежденных или глубоких файловых систем.\tДобавить ограничение по глубине рекурсии (depth limit) и таймаут на обработку каждого узла.",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): entry_size"
+    },
+    {
+      "line_no": 155,
+      "severity": "P2",
+      "ref": "scripts/promote_check.py:46",
+      "claim": "P2\tscripts/promote_check.py:46\tФункция _load_state полностью глушит любые исключения при разборе STATE.json (except (OSError, ValueError): return {}), скрывая повреждения файлов.\tЛогировать предупреждения о поврежденных конфигурационных файлах вместо тихого возврата пустого словаря.",
+      "status": "confirmed",
+      "detail": "совпало в строках 43-50: _load_state, except, oserror, valueerror"
+    },
+    {
+      "line_no": 156,
+      "severity": "P2",
+      "ref": "scripts/release_gate.py:53",
+      "claim": "P2\tscripts/release_gate.py:53\tПроверка check_journal_lint и check_snapshot принудительно возвращают True (предупреждения), маскируя потенциальные проблемы конвейера под «зелёный» статус.\tСделать уровень строгости настраиваемым через аргументы командной строки для CI/CD окружений.",
+      "status": "confirmed",
+      "detail": "совпало в строках 50-57: scripts"
+    },
+    {
+      "line_no": 199,
+      "severity": "P0",
+      "ref": "scripts/qwen3_tts_gateway.py:16",
+      "claim": "scripts/qwen3_tts_gateway.py:16 — Жестко заданные пути к .venv и аудиофайлу (Severity: P0).",
+      "status": "line_mismatch",
+      "detail": "в строках 16-16 нет слов: scripts, severity"
+    },
+    {
+      "line_no": 201,
+      "severity": "P1",
+      "ref": "scripts/project_intake.py:157",
+      "claim": "scripts/project_intake.py:157 — Небезопасная межпроцессорная блокировка через файл /tmp/lc_intake.lock (Severity: P1).",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): lc_intake"
+    },
+    {
+      "line_no": 203,
+      "severity": "P1",
+      "ref": "scripts/memory_guard.py:90",
+      "claim": "scripts/memory_guard.py:90 — Рекурсивный обход /tmp без ограничений глубины (Severity: P1).",
+      "status": "line_mismatch",
+      "detail": "в строках 90-90 нет слов: scripts, severity"
+    },
+    {
+      "line_no": 205,
+      "severity": "P2",
+      "ref": "scripts/promote_check.py:46",
+      "claim": "scripts/promote_check.py:46 — Подавление ошибок при чтении STATE.json (Severity: P2).",
+      "status": "line_mismatch",
+      "detail": "в строках 46-46 нет слов: scripts, severity"
+    },
+    {
+      "line_no": 207,
+      "severity": "P2",
+      "ref": "scripts/release_gate.py:53",
+      "claim": "scripts/release_gate.py:53 — Превращение важных проверок состояния в мягкие предупреждения (Severity: P2).",
+      "status": "confirmed",
+      "detail": "совпало в строках 50-57: scripts"
+    },
+    {
+      "line_no": 259,
+      "severity": "P1",
+      "ref": "scripts/x_lane.py:382",
+      "claim": "P1\tscripts/x_lane.py:382\tОбрезанный код в конце файла (r.ad[chunk 6, часть 3/...), синтаксическая ошибка / обрыв скрипта.\tВосстановить усеченный блок регистрации аргумента парсера (r.add_argument(\"target\")).",
+      "status": "weak",
+      "detail": "ключевые слова найдены только рядом (±60): target"
+    },
+    {
+      "line_no": 260,
+      "severity": "P2",
+      "ref": "rotation.json:49",
+      "claim": "P2\trotation.json:49\tЖёстко зашитые модели и провайдеры в схеме без автоматической динамической проверки актуальности токенов/доступа.\tРеализовать валидатор конфигурации роли перед запуском спринта.",
+      "status": "line_mismatch",
+      "detail": "в строках 49-49 нет слов: —"
+    },
+    {
+      "line_no": 261,
+      "severity": "P2",
+      "ref": "state/free_capability.json:34",
+      "claim": "P2\tstate/free_capability.json:34\tТекст JSON поврежден хвостовой склейкой мета-описания чанка (\"вывод\": \"4/5 бесплатЭто часть 6 аудита...).\tОчистить JSON-файл от постороннего текста для валидной сериализации.",
+      "status": "line_mismatch",
+      "detail": "в строках 34-34 нет слов: —"
+    }
+  ]
+}
